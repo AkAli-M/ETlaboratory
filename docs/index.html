@@ -2,35 +2,112 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Attendance Records</title>
+  <title>Welcome Akbar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
-    body {
-      font-family: "Segoe UI", sans-serif;
-      background: #f7f7f7;
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
       margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #0f2027;  /* fallback for old browsers */
+      background: linear-gradient(to right, #2c5364, #203a43, #0f2027);
+      color: white;
+      text-align: center;
       padding: 20px;
     }
 
     h1 {
-      text-align: center;
-      color: #333;
+      font-size: 2em;
+      margin-bottom: 10px;
+      background: linear-gradient(to right, #ff6ec4, #7873f5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradientMove 3s ease infinite;
+    }
+
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
+
+    #details {
+      margin-bottom: 20px;
+      font-size: 1.2em;
+    }
+
+    #patternLock {
+      width: 260px;
+      height: 260px;
+      margin: 20px auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 10px;
+      touch-action: none;
+    }
+
+    .dot {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 2px solid white;
+      margin: auto;
+    }
+
+    .dot.active {
+      background-color: white;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+    }
+
+    #unlockOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 32, 39, 0.95);
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #consoleText {
+      color: #00ff00;
+      font-family: monospace;
+      font-size: 0.9em;
+      height: 100px;
+      overflow-y: auto;
+      margin-top: 10px;
+      width: 90%;
+      max-width: 400px;
+      text-align: left;
     }
 
     table {
-      border-collapse: collapse;
       margin: 20px auto;
-      width: 90%;
+      border-collapse: collapse;
+      width: 95%;
       max-width: 800px;
-      background: #fff;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      background: white;
+      color: black;
     }
 
     th, td {
-      padding: 12px 16px;
-      border-bottom: 1px solid #eee;
-      text-align: left;
+      padding: 12px;
+      border: 1px solid #ddd;
     }
 
     th {
@@ -38,69 +115,135 @@
       color: white;
     }
 
-    tr:hover {
-      background-color: #f1f1f1;
+    @media screen and (max-width: 600px) {
+      table {
+        font-size: 0.9em;
+      }
+      .dot {
+        width: 60px;
+        height: 60px;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Attendance Records</h1>
-  <table id="attendanceTable">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Date</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr><td colspan="3">Loading...</td></tr>
-    </tbody>
-  </table>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+<div id="unlockOverlay">
+  <h1>Hello Akbar</h1>
+  <div id="details">
+    Age: 20<br>
+    Admission No: 24b973
+  </div>
+  <div id="patternLock">
+    <!-- 3x3 Dots -->
+    <div class="dot" data-index="0"></div>
+    <div class="dot" data-index="1"></div>
+    <div class="dot" data-index="2"></div>
+    <div class="dot" data-index="3"></div>
+    <div class="dot" data-index="4"></div>
+    <div class="dot" data-index="5"></div>
+    <div class="dot" data-index="6"></div>
+    <div class="dot" data-index="7"></div>
+    <div class="dot" data-index="8"></div>
+  </div>
+  <div id="consoleText">[ waiting for input... ]</div>
+</div>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCGOofwAiQZGEhoqDpb_GpPzdYXBeSXshw",
-      authDomain: "etlab-93ce5.firebaseapp.com",
-      projectId: "etlab-93ce5",
-      storageBucket: "etlab-93ce5.firebasestorage.app",
-      messagingSenderId: "695234553288",
-      appId: "1:695234553288:web:300b4b5c547bd89a8a8cfd"
-    };
+<h1>Attendance Records</h1>
+<table id="attendanceTable">
+  <thead>
+    <tr><th>Name</th><th>Date</th><th>Status</th></tr>
+  </thead>
+  <tbody>
+    <tr><td colspan="3">Loading...</td></tr>
+  </tbody>
+</table>
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    async function loadAttendance() {
-      const tableBody = document.querySelector("#attendanceTable tbody");
-      tableBody.innerHTML = "";
+  const firebaseConfig = {
+    apiKey: "AIzaSyCGOofwAiQZGEhoqDpb_GpPzdYXBeSXshw",
+    authDomain: "etlab-93ce5.firebaseapp.com",
+    projectId: "etlab-93ce5",
+    storageBucket: "etlab-93ce5.firebasestorage.app",
+    messagingSenderId: "695234553288",
+    appId: "1:695234553288:web:300b4b5c547bd89a8a8cfd"
+  };
 
-      try {
-        const snapshot = await getDocs(collection(db, "attendance"));
-        if (snapshot.empty) {
-          tableBody.innerHTML = "<tr><td colspan='3'>No records found.</td></tr>";
-          return;
-        }
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          const row = document.createElement("tr");
-          row.innerHTML = `
-            <td>${data.Name || "N/A"}</td>
-            <td>${data.Date || "N/A"}</td>
-            <td>${data.Status || "N/A"}</td>
-          `;
-          tableBody.appendChild(row);
-        });
-      } catch (err) {
-        tableBody.innerHTML = `<tr><td colspan='3'>Error: ${err.message}</td></tr>`;
-      }
+  async function loadAttendance() {
+    const tableBody = document.querySelector("#attendanceTable tbody");
+    tableBody.innerHTML = "";
+    const snapshot = await getDocs(collection(db, "attendance"));
+    if (snapshot.empty) {
+      tableBody.innerHTML = "<tr><td colspan='3'>No records found.</td></tr>";
+      return;
     }
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${data.Name || "N/A"}</td>
+        <td>${data.Date || "N/A"}</td>
+        <td>${data.Status || "N/A"}</td>
+      `;
+      tableBody.appendChild(row);
+    });
+  }
 
-    window.onload = loadAttendance;
-  </script>
+  // Pattern Lock Setup
+  const correctPattern = [0, 1, 2, 5, 8];  // Your secret pattern
+  const selectedPattern = [];
+  const dots = document.querySelectorAll(".dot");
+  const overlay = document.getElementById("unlockOverlay");
+  const consoleText = document.getElementById("consoleText");
+
+  dots.forEach(dot => {
+    dot.addEventListener("touchstart", handleTouch);
+    dot.addEventListener("mousedown", handleTouch);
+  });
+
+  function handleTouch(e) {
+    const index = parseInt(e.target.dataset.index);
+    if (!selectedPattern.includes(index)) {
+      selectedPattern.push(index);
+      e.target.classList.add("active");
+      addConsoleLine(`> dot[${index}] activated`);
+    }
+    if (selectedPattern.length >= correctPattern.length) {
+      validatePattern();
+    }
+  }
+
+  function validatePattern() {
+    const match = correctPattern.every((v, i) => v === selectedPattern[i]);
+    if (match) {
+      addConsoleLine("> Pattern accepted");
+      setTimeout(() => {
+        overlay.style.display = "none";
+        loadAttendance();
+      }, 1000);
+    } else {
+      addConsoleLine("> Incorrect pattern. Try again.");
+      resetPattern();
+    }
+  }
+
+  function resetPattern() {
+    selectedPattern.length = 0;
+    dots.forEach(dot => dot.classList.remove("active"));
+  }
+
+  function addConsoleLine(text) {
+    const p = document.createElement("div");
+    p.textContent = text;
+    consoleText.appendChild(p);
+    consoleText.scrollTop = consoleText.scrollHeight;
+  }
+</script>
 </body>
 </html>

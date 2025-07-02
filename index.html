@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Attendance Records</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #f7f7f7;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    table {
+      border-collapse: collapse;
+      margin: 20px auto;
+      width: 90%;
+      max-width: 800px;
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+    }
+
+    th {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+  </style>
+</head>
+<body>
+  <h1>Attendance Records</h1>
+  <table id="attendanceTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Date</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td colspan="3">Loading...</td></tr>
+    </tbody>
+  </table>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCGOofwAiQZGEhoqDpb_GpPzdYXBeSXshw",
+      authDomain: "etlab-93ce5.firebaseapp.com",
+      projectId: "etlab-93ce5",
+      storageBucket: "etlab-93ce5.firebasestorage.app",
+      messagingSenderId: "695234553288",
+      appId: "1:695234553288:web:300b4b5c547bd89a8a8cfd"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function loadAttendance() {
+      const tableBody = document.querySelector("#attendanceTable tbody");
+      tableBody.innerHTML = "";
+
+      try {
+        const snapshot = await getDocs(collection(db, "attendance"));
+        if (snapshot.empty) {
+          tableBody.innerHTML = "<tr><td colspan='3'>No records found.</td></tr>";
+          return;
+        }
+
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${data.Name || "N/A"}</td>
+            <td>${data.Date || "N/A"}</td>
+            <td>${data.Status || "N/A"}</td>
+          `;
+          tableBody.appendChild(row);
+        });
+      } catch (err) {
+        tableBody.innerHTML = `<tr><td colspan='3'>Error: ${err.message}</td></tr>`;
+      }
+    }
+
+    window.onload = loadAttendance;
+  </script>
+</body>
+</html>
